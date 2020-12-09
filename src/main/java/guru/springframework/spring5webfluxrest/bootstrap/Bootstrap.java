@@ -23,6 +23,9 @@ public class Bootstrap implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        //clear data...
+        categoryRepository.deleteAll().block();
+        vendorRepository.deleteAll().block();
 
         if(categoryRepository.count().block() == 0){
             //load data
