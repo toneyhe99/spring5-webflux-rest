@@ -44,15 +44,14 @@ public class CategoryController {
 
     @PatchMapping("/api/v1/categories/{id}")
     Mono<Category> patch(@PathVariable String id, @RequestBody Category category) {
-
-        Category foundCategory = categoryRepository.findById(id).block();
-
-        if(foundCategory.getDescription() != category.getDescription()){
-            foundCategory.setDescription(category.getDescription());
-            return categoryRepository.save(foundCategory);
-        }
-
-        return Mono.just(foundCategory);
+        //fixed a bug : categoryRepository.findById(id).block()  got exception! TODO: VendorController.patch has same issue!
+        return categoryRepository.findById(id).map(foundCategory -> {
+            if(foundCategory.getDescription() != category.getDescription()){
+                foundCategory.setDescription(category.getDescription());
+                categoryRepository.save(foundCategory).subscribe();
+            }
+            return foundCategory;
+        });
     }
 
 }
